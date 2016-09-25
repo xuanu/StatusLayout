@@ -1,10 +1,12 @@
 # StatusLayout
 显示不同状态的布局。emptyLayout,errorLayout,noNetLayout,loadingLayout
 > 基于原项目的修改[Android-View-Status](https://github.com/xuanu/Android-View-Status)  
+  
 原项目的实现方法是**动态生成一个View,添加到父布局中**，使用有一定的局限性。  
 ***  
 > 新项目Github地址：[StatusLayout](https://github.com/xuanu/StatusLayout)  
 > 新项目博客地址： [显示不同状态的布局](http://zeffect.cn/index.php/archives/13/)  
+  
 # 新项目实现原理  
 1. 继承FrameLayout，状态布局和内容布局全部添加到这个布局下。  
 2. 状态布局占满空间，需要显示某个布局时，隐藏其它布局，显示指定布局。  
