@@ -46,33 +46,84 @@ public class StateLayout extends FrameLayout {
         super(context, attrs, defStyleAttr);
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.StateLayout, defStyleAttr, 0);
         try {
-            int noNetId = array.getResourceId(R.styleable.StateLayout_noNetLayout, R.layout.viewstatus_no_netwrok);
-            int emptyId = array.getResourceId(R.styleable.StateLayout_emptyLayout, R.layout.viewstatus_no_data);
-            int errorId = array.getResourceId(R.styleable.StateLayout_errorLayout, R.layout.viewstatus_loading_faile);
-            int loadingId = array.getResourceId(R.styleable.StateLayout_loadingLayout, R.layout.viewstatus_loading);
             LayoutInflater inflater = LayoutInflater.from(context);
             LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            noNetwrokView = inflater.inflate(noNetId, null);
-            addView(noNetwrokView, params);
-            setViewVisibility(noNetwrokView, false);
-            noDataView = inflater.inflate(emptyId, null);
-            addView(noDataView, params);
-            setViewVisibility(noDataView, false);
-            loadingWrongView = inflater.inflate(errorId, null);
-            addView(loadingWrongView, params);
-            setViewVisibility(loadingWrongView, false);
-            loadingView = inflater.inflate(loadingId, null);
-            addView(loadingView, params);
-            setViewVisibility(loadingView, false);
+            if (array.hasValue(R.styleable.StateLayout_noNetLayout)) {
+                int noNetId = array.getResourceId(R.styleable.StateLayout_noNetLayout, R.layout.viewstatus_no_netwrok);
+                noNetwrokView = inflater.inflate(noNetId, null);
+                addView(noNetwrokView, params);
+                setViewVisibility(noNetwrokView, false);
+            }
+            if (array.hasValue(R.styleable.StateLayout_emptyLayout)) {
+                int emptyId = array.getResourceId(R.styleable.StateLayout_emptyLayout, R.layout.viewstatus_no_data);
+                noDataView = inflater.inflate(emptyId, null);
+                addView(noDataView, params);
+                setViewVisibility(noDataView, false);
+            }
+            if (array.hasValue(R.styleable.StateLayout_errorLayout)) {
+                int errorId = array.getResourceId(R.styleable.StateLayout_errorLayout, R.layout.viewstatus_loading_faile);
+                loadingWrongView = inflater.inflate(errorId, null);
+                addView(loadingWrongView, params);
+                setViewVisibility(loadingWrongView, false);
+            }
+            if (array.hasValue(R.styleable.StateLayout_loadingLayout)) {
+                int loadingId = array.getResourceId(R.styleable.StateLayout_loadingLayout, R.layout.viewstatus_loading);
+                loadingView = inflater.inflate(loadingId, null);
+                addView(loadingView, params);
+                setViewVisibility(loadingView, false);
+            }
         } finally {
             array.recycle();
         }
     }
 
     /**
+     * 检查某个控件是否为空，并初始化
+     *
+     * @param state
+     */
+    private void checkNullAndInflate(int state) {
+        View pView = null;
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        switch (state) {
+            case StateEmpty:
+                if (noDataView == null) {
+                    noDataView = inflater.inflate(R.layout.viewstatus_no_netwrok, null);
+                    pView = noDataView;
+                }
+                break;
+            case StateError:
+                if (loadingWrongView == null) {
+                    loadingWrongView = inflater.inflate(R.layout.viewstatus_loading_faile, null);
+                    pView = loadingWrongView;
+                }
+                break;
+            case StateLoading:
+                if (loadingView == null) {
+                    loadingView = inflater.inflate(R.layout.viewstatus_loading, null);
+                    pView = loadingView;
+                }
+                break;
+            case StateNoNet:
+                if (noNetwrokView == null) {
+                    noNetwrokView = inflater.inflate(R.layout.viewstatus_no_netwrok, null);
+                    pView = noNetwrokView;
+                }
+                break;
+        }
+        if (pView != null) {
+            addView(pView, params);
+            setViewVisibility(pView, false);
+        }
+    }
+
+
+    /**
      * 显示空视图
      */
     public void showEmptyView() {
+        checkNullAndInflate(StateEmpty);
         selectView(nowShowView(mShowState), noDataView);
         mShowState = StateEmpty;
     }
@@ -81,6 +132,7 @@ public class StateLayout extends FrameLayout {
      * 显示没有网络视图
      */
     public void showNoNetView() {
+        checkNullAndInflate(StateNoNet);
         selectView(nowShowView(mShowState), noNetwrokView);
         mShowState = StateNoNet;
     }
@@ -89,6 +141,7 @@ public class StateLayout extends FrameLayout {
      * 显示加载中布局
      */
     public void showLoadingView() {
+        checkNullAndInflate(StateLoading);
         selectView(nowShowView(mShowState), loadingView);
         mShowState = StateLoading;
     }
@@ -97,6 +150,7 @@ public class StateLayout extends FrameLayout {
      * 显示加载失败视图
      */
     public void showErrorView() {
+        checkNullAndInflate(StateError);
         selectView(nowShowView(mShowState), loadingWrongView);
         mShowState = StateError;
     }
@@ -117,6 +171,9 @@ public class StateLayout extends FrameLayout {
      * @param pClick 点击回调
      */
     public void setNoNetClick(OnClickListener pClick) {
+        if (noNetwrokView == null) {
+            throw new NullPointerException("view not inflate");
+        }
         if (pClick != null) {
             noNetwrokView.findViewById(R.id.vs_nn_root).setOnClickListener(pClick);
         } else {
@@ -136,6 +193,9 @@ public class StateLayout extends FrameLayout {
      */
     public void setLoadingClick(OnClickListener pClick) {
         if (pClick != null) {
+            if (loadingView == null) {
+                throw new NullPointerException("view not inflate");
+            }
             loadingView.findViewById(R.id.vs_le_root).setOnClickListener(pClick);
         }
     }
@@ -147,6 +207,9 @@ public class StateLayout extends FrameLayout {
      */
     public void setErrorClick(OnClickListener pClick) {
         if (pClick != null) {
+            if (loadingWrongView == null) {
+                throw new NullPointerException("view not inflate");
+            }
             loadingWrongView.findViewById(R.id.vs_lf_root).setOnClickListener(pClick);
         }
     }
@@ -158,6 +221,9 @@ public class StateLayout extends FrameLayout {
      */
     public void setEmptyClick(OnClickListener pClick) {
         if (pClick != null) {
+            if (noDataView == null) {
+                throw new NullPointerException("view not inflate");
+            }
             noDataView.findViewById(R.id.vs_nd_root).setOnClickListener(pClick);
         }
     }
@@ -276,9 +342,23 @@ public class StateLayout extends FrameLayout {
     private void checkIsContentView(View view) {
         if (view != null && view != noNetwrokView && view != loadingView && view != loadingWrongView && view != noDataView) {
             mContentView = view;
-            if (this.getChildCount() > 5) {
-                throw new RuntimeException("StateLayout must only Child");
+            int mixConut = 0;
+            if (noNetwrokView != null) {
+                mixConut++;
             }
+            if (loadingView != null) {
+                mixConut++;
+            }
+            if (loadingWrongView != null) {
+                mixConut++;
+            }
+            if (noDataView != null) {
+                mixConut++;
+            }
+            if (getChildCount() != mixConut) {
+                throw new RuntimeException("StateLayout must only one child");
+            }
+
         }
     }
 
