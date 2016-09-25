@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#ffffff">
+
+    <LinearLayout
+        android:id="@+id/vs_le_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <cn.zeffect.views.loadingview.LoadingView
+            app:border_color="#9e9e9e"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="8dp"
+            android:text="加载中"
+            android:textColor="#aeaeae"
+            android:textSize="14sp"/>
+    </LinearLayout>
+</ScrollView>
